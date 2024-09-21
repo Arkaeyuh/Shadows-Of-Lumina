@@ -76,20 +76,22 @@ class SettingsMenu:
                 self.menu_move_sound.play()
 
             if event.key == pygame.K_LEFT:
-                if self.selected_index == 0:
+                if self.selected_index == 0:  # Adjust Music Volume
                     self.music_volume = max(0, self.music_volume - 0.1)
                     pygame.mixer.music.set_volume(self.music_volume)
-                elif self.selected_index == 1:
+                elif self.selected_index == 1:  # Adjust SFX Volume
                     self.sfx_volume = max(0, self.sfx_volume - 0.1)
                     self.menu_sound.set_volume(self.sfx_volume)
+                    self.menu_move_sound.set_volume(self.sfx_volume)
 
             if event.key == pygame.K_RIGHT:
-                if self.selected_index == 0:
+                if self.selected_index == 0:  # Adjust Music Volume
                     self.music_volume = min(1, self.music_volume + 0.1)
                     pygame.mixer.music.set_volume(self.music_volume)
-                elif self.selected_index == 1:
+                elif self.selected_index == 1:  # Adjust SFX Volume
                     self.sfx_volume = min(1, self.sfx_volume + 0.1)
                     self.menu_sound.set_volume(self.sfx_volume)
+                    self.menu_move_sound.set_volume(self.sfx_volume)
 
     def select_option(self):
         """Return the option the player has selected."""
