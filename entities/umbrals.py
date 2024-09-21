@@ -62,6 +62,51 @@ class Umbral(pygame.sprite.Sprite):
             spritesheet.get_sprite(512, 640, 64, 64)
         ]
 
+        self.attack_left_frames = [
+            spritesheet.get_sprite(0, 832, 64, 64),
+            spritesheet.get_sprite(64, 832, 64, 64),
+            spritesheet.get_sprite(128, 832, 64, 64),
+            spritesheet.get_sprite(192, 832, 64, 64),
+            spritesheet.get_sprite(256, 832, 64, 64),
+            spritesheet.get_sprite(320, 832, 64, 64)
+        ]
+
+        self.attack_right_frames = [
+            spritesheet.get_sprite(0, 960, 64, 64),
+            spritesheet.get_sprite(64, 960, 64, 64),
+            spritesheet.get_sprite(128, 960, 64, 64),
+            spritesheet.get_sprite(192, 960, 64, 64),
+            spritesheet.get_sprite(256, 960, 64, 64),
+            spritesheet.get_sprite(320, 960, 64, 64)      
+        ]
+
+        self.attack_up_frames = [
+            spritesheet.get_sprite(0, 768, 64, 64),
+            spritesheet.get_sprite(64, 768, 64, 64),
+            spritesheet.get_sprite(128, 768, 64, 64),
+            spritesheet.get_sprite(192, 768, 64, 64),
+            spritesheet.get_sprite(256, 768, 64, 64),
+            spritesheet.get_sprite(320, 768, 64, 64),       
+        ]
+
+        self.attack_down_frames = [
+            spritesheet.get_sprite(0, 896, 64, 64),
+            spritesheet.get_sprite(64, 896, 64, 64),
+            spritesheet.get_sprite(128, 896, 64, 64),
+            spritesheet.get_sprite(192, 896, 64, 64),
+            spritesheet.get_sprite(256, 896, 64, 64),
+            spritesheet.get_sprite(320, 896, 64, 64)        
+        ]
+
+        self.death_frames = [
+            spritesheet.get_sprite(0, 1280, 64, 64),
+            spritesheet.get_sprite(64, 1280, 64, 64),
+            spritesheet.get_sprite(128, 1280, 64, 64),
+            spritesheet.get_sprite(192, 1280, 64, 64),
+            spritesheet.get_sprite(256, 1280, 64, 64),
+            spritesheet.get_sprite(320, 1280, 64, 64)
+        ]
+
         # Initial animation state
         self.current_frame = 0
         self.animation_speed = 0.2  # Adjust animation speed (lower = faster)
@@ -89,27 +134,66 @@ class Umbral(pygame.sprite.Sprite):
 
         # Distance threshold to stop wandering and start chasing
         self.chase_threshold = 200  # Distance in pixels
+        self.is_attacking = False
+        # Cooldown for attacks
+        self.attack_cooldown = 1  # 1 second cooldown between attacks
+        self.last_attack_time = 0
+        self.damage_dealt = False
+
+
+      # Death state
+        self.is_dying = False  # Track if Umbral is in the process of dying
+        self.death_animation_done = False  # Track when the death animation has finished
+
 
     def update(self, delta_time, player):
         """Update Umbral position and behavior."""
         # Calculate distance to player
+
+        if self.is_dying:
+            self.animate(delta_time, player)
+            return
+
         player_position = pygame.Vector2(player.rect.center)
         umbral_position = pygame.Vector2(self.rect.center)
         distance_to_player = umbral_position.distance_to(player_position)
 
+        if self.is_attacking:
+            # If attacking, we won't move
+            self.animate(delta_time, player)
+            return
+
         # Stop wandering and chase player if close enough
-        if distance_to_player < self.chase_threshold:
+        if distance_to_player < 50:  # Attack range
+            self.is_wandering = False
+            self.attack_player(player)
+        elif distance_to_player < self.chase_threshold:
             self.is_wandering = False
         else:
             self.is_wandering = True
 
         if self.is_wandering:
             self.wander(delta_time)
-        else:
+        elif not self.is_attacking:
             self.chase_player(player)
 
         # Handle animation
-        self.animate(delta_time)
+        self.animate(delta_time, player)
+
+
+    def attack_player(self, player):
+        """Attack the player if within range."""
+        current_time = pygame.time.get_ticks() / 1000  # Get time in seconds
+
+        # Check if we are allowed to attack (based on cooldown)
+        if current_time - self.last_attack_time >= self.attack_cooldown:
+            self.is_attacking = True
+            self.last_attack_time = current_time
+            player.take_damage(20)  # Deal damage to the player
+            self.current_frame = 0
+            self.damage_dealt = False
+        else:
+            self.is_attacking = False
 
     def wander(self, delta_time):
         """Wandering movement logic for Umbral."""
@@ -173,29 +257,70 @@ class Umbral(pygame.sprite.Sprite):
         ]
         self.direction = directions[random.randint(0, len(directions) - 1)]
 
-    def animate(self, delta_time):
+    def animate(self, delta_time, player):
         """Handles sprite animation."""
         self.animation_timer += delta_time
 
         if self.animation_timer >= self.animation_speed:
             self.animation_timer = 0
-            self.current_frame = (self.current_frame + 1) % 9  # 4 frames
 
-            # Choose the correct frames based on the direction
-            if self.direction.x > 0:
-                self.image = self.walk_right_frames[self.current_frame]
-            elif self.direction.x < 0:
-                self.image = self.walk_left_frames[self.current_frame]
-            elif self.direction.y > 0:
-                self.image = self.walk_down_frames[self.current_frame]
-            elif self.direction.y < 0:
-                self.image = self.walk_up_frames[self.current_frame]
+            if self.is_dying:
+                # Play death animation
+                self.current_frame += 1
+                if self.current_frame < len(self.death_frames):
+                    self.image = self.death_frames[self.current_frame]
+                else:
+                    self.death_animation_done = True
+                    self.kill()  # Remove the sprite after the death animation
+                return
+
+            if self.is_attacking:
+                # Play attack animation based on direction
+                attack_frames = None
+                if self.direction.x > 0:
+                    attack_frames = self.attack_right_frames
+                elif self.direction.x < 0:
+                    attack_frames = self.attack_left_frames
+                elif self.direction.y > 0:
+                    attack_frames = self.attack_down_frames
+                elif self.direction.y < 0:
+                    attack_frames = self.attack_up_frames
+
+                self.image = attack_frames[self.current_frame]
+
+                # Update attack animation frame
+                self.current_frame += 1
+
+                # If at the middle of the attack animation, deal damage
+                middle_frame = len(attack_frames) // 2
+                if self.current_frame == middle_frame and not self.damage_dealt:
+                    player.take_damage(20)  # Deal damage to the player
+                    self.damage_dealt = True  # Prevent further damage from this attack
+
+                # After the attack animation completes, stop attacking
+                if self.current_frame >= len(attack_frames):
+                    self.is_attacking = False  # Reset attack state
+                    self.current_frame = 0  # Reset frame counter
+            else:
+                # Continue normal walking animations
+                self.current_frame = (self.current_frame + 1) % len(self.walk_right_frames)
+
+                # Choose the correct frames based on the direction
+                if self.direction.x > 0:
+                    self.image = self.walk_right_frames[self.current_frame]
+                elif self.direction.x < 0:
+                    self.image = self.walk_left_frames[self.current_frame]
+                elif self.direction.y > 0:
+                    self.image = self.walk_down_frames[self.current_frame]
+                elif self.direction.y < 0:
+                    self.image = self.walk_up_frames[self.current_frame]
 
     def take_damage(self, amount):
         """Reduce health when hit."""
         self.health -= amount
         if self.health <= 0:
-            self.kill()  # Remove the Umbral from the game when dead
+            self.is_dying = True
+            self.current_frame = 0
 
     def draw(self, screen):
         """Draw the Umbral sprite on the screen."""

@@ -146,7 +146,7 @@ class Player(pygame.sprite.Sprite):
                     umbral.take_damage(25)  # Deal damage to the Umbral
                 spell.kill()  # Ensure the spell is removed after hitting an Umbraiil
 
-        self.check_umbral_collision(umbrals)
+        # self.check_umbral_collision(umbrals)
 
     def take_damage(self, amount):
         """Reduces player's health and checks if the player is still alive."""
@@ -162,13 +162,13 @@ class Player(pygame.sprite.Sprite):
                 self.kill()  # Remove the player from the game if health is depleted
                 print("Player has died.")  # Handle death logic here (game over, etc.)
 
-    def check_umbral_collision(self, umbrals):
-        """Check for collisions between the player and any umbrals."""
-        umbrals_hit = pygame.sprite.spritecollide(self, umbrals, False)
+    # def check_umbral_collision(self, umbrals):
+    #     """Check for collisions between the player and any umbrals."""
+    #     umbrals_hit = pygame.sprite.spritecollide(self, umbrals, False)
 
-        # If the player collides with any umbral, take damage
-        if umbrals_hit:
-            self.take_damage(20)  # Adjust the damage value as needed
+    #     # If the player collides with any umbral, take damage
+    #     if umbrals_hit:
+    #         self.take_damage(20)  # Adjust the damage value as needed
 
 
     def regenerate_lumina(self, delta_time):
