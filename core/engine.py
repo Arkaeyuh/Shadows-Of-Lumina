@@ -1,7 +1,7 @@
 import pygame
 from core.state_manager import StateManager
 from config.settings import SCREEN_WIDTH, SCREEN_HEIGHT, FPS
-from entities import Player
+from entities import Player, Umbral
 
 class Engine:
     def __init__(self, screen_width=SCREEN_WIDTH, screen_height=SCREEN_HEIGHT, fps=FPS):
@@ -19,6 +19,11 @@ class Engine:
 
         # Initialize player
         self.player = Player(self.screen_width // 2, self.screen_height // 2, 2)  # Define player at screen center
+        self.umbrals = pygame.sprite.Group()
+        self.umbrals.add(
+            Umbral(200, 200, 2, SCREEN_WIDTH, SCREEN_HEIGHT),
+            Umbral(300, 300, 2, SCREEN_WIDTH, SCREEN_HEIGHT)
+        )
         self.is_running = True
 
     def handle_events(self):
@@ -35,6 +40,7 @@ class Engine:
 
         # Update player movement and animation
         self.player.update(keys_pressed, delta_time)
+        self.umbrals.update(delta_time, self.player)
 
         # Update the state manager
         self.state_manager.update(delta_time)
@@ -45,6 +51,7 @@ class Engine:
 
         # Render the player
         self.player.draw(self.screen)
+        self.umbrals.draw(self.screen)
 
         # Render the rest of the game
         self.state_manager.render(self.screen)

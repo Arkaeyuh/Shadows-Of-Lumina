@@ -1,5 +1,5 @@
 from .player import Player
-#from .umbrals import Umbral
+from .umbrals import Umbral
 #from .shadow_lord import ShadowLord
 #from .aeris import Aeris
 
