@@ -1,8 +1,8 @@
 # Game configuration settings
 
 # Screen dimensions
-SCREEN_WIDTH = 1024
-SCREEN_HEIGHT = 768
+SCREEN_WIDTH = 1920 
+SCREEN_HEIGHT = 1080
 
 # Frames per second
 FPS = 60
