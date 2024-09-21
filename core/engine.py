@@ -1,8 +1,9 @@
 import pygame
 from core.state_manager import StateManager
-from scenes.main_menu_state import MainMenuState
-from scenes.game_state import GameState
-from scenes.settings_state import SettingsState
+from scenes import MainMenuState
+from scenes import GameState
+from scenes import SettingsState
+from scenes import TitleScreen
 from config.settings import SCREEN_WIDTH, SCREEN_HEIGHT, FPS
 
 class Engine:
@@ -23,6 +24,7 @@ class Engine:
         self.state_manager.add_state("main_menu", MainMenuState(self.state_manager))
         self.state_manager.add_state("game", GameState(self.state_manager))
         self.state_manager.add_state("settings", SettingsState(self.state_manager))
+        # self.state_manager.add_state("titlescreen", TitleScreen(self.state_manager))
         
         # Set the initial state to main menu
         self.state_manager.set_state("main_menu")
