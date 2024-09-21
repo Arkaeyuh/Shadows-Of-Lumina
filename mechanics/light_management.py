@@ -1,3 +1,5 @@
+import pygame
+
 class LightManager:
     def __init__(self, initial_energy):
         self.lumina_energy = initial_energy

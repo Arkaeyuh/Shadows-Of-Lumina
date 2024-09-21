@@ -1,5 +1,6 @@
 import pygame
 from config import SpriteSheet
+from pygame.math import Vector2
 import random
 
 class Umbral(pygame.sprite.Sprite):
@@ -76,7 +77,7 @@ class Umbral(pygame.sprite.Sprite):
         self.speed = speed
         self.health = 50
         self.is_wandering = True  # Determines if Umbral is wandering or chasing player
-        self.direction = pygame.Vector2(1, 0)  # Default direction (right)
+        self.direction = Vector2(1, 0)  # Default direction (right)
 
         # Screen boundaries to prevent wandering off-screen
         self.screen_width = screen_width
@@ -141,8 +142,8 @@ class Umbral(pygame.sprite.Sprite):
 
     def chase_player(self, player):
         """Chase the player if they are nearby."""
-        player_position = pygame.Vector2(player.rect.center)
-        umbral_position = pygame.Vector2(self.rect.center)
+        player_position = Vector2(player.rect.center)
+        umbral_position = Vector2(self.rect.center)
 
         direction = player_position - umbral_position
 

@@ -1,6 +1,6 @@
 from .hud import HUD
-from .menu import Menu
-from .buttons import Button
+# from .menu import Menu
+# from .buttons import Button
 
 # You can import UI components like:
 # from ui import HUD, Menu

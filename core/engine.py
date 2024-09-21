@@ -1,69 +1,42 @@
 import pygame
 from core.state_manager import StateManager
+from scenes.main_menu_state import MainMenuState
+from scenes.game_state import GameState
+from scenes.settings_state import SettingsState
 from config.settings import SCREEN_WIDTH, SCREEN_HEIGHT, FPS
-from entities import Player, Umbral
 
 class Engine:
-    def __init__(self, screen_width=SCREEN_WIDTH, screen_height=SCREEN_HEIGHT, fps=FPS):
-        self.screen_width = screen_width
-        self.screen_height = screen_height
-        self.fps = fps
+    def __init__(self, screen_width, screen_height, fps):
+        self.screen_width = SCREEN_WIDTH
+        self.screen_height = SCREEN_HEIGHT
+        self.fps = FPS
         self.clock = pygame.time.Clock()
         
         # Initialize Pygame display
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
-        pygame.display.set_caption("The Cursed Kingdom: Shadows of Lumina")
+        pygame.display.set_caption("The Cursed Kingdom")
         
         # Initialize the state manager
         self.state_manager = StateManager()
 
-        # Initialize player
-        self.player = Player(self.screen_width // 2, self.screen_height // 2, 2)  # Define player at screen center
-        self.umbrals = pygame.sprite.Group()
-        self.umbrals.add(
-            Umbral(200, 200, 2, SCREEN_WIDTH, SCREEN_HEIGHT),
-            Umbral(300, 300, 2, SCREEN_WIDTH, SCREEN_HEIGHT)
-        )
-        self.is_running = True
-
-    def handle_events(self):
-        """Handles events like input, mouse, etc."""
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                self.is_running = False
-            self.state_manager.handle_events(event)
-
-    def update(self, delta_time):
-        """Updates the game logic."""
-        # Get key input
-        keys_pressed = pygame.key.get_pressed()
-
-        # Update player movement and animation
-        self.player.update(keys_pressed, delta_time)
-        self.umbrals.update(delta_time, self.player)
-
-        # Update the state manager
-        self.state_manager.update(delta_time)
-
-    def render(self):
-        """Renders the current game state."""
-        self.screen.fill((0, 0, 0))  # Clear screen with black
-
-        # Render the player
-        self.player.draw(self.screen)
-        self.umbrals.draw(self.screen)
-
-        # Render the rest of the game
-        self.state_manager.render(self.screen)
+        # Register states
+        self.state_manager.add_state("main_menu", MainMenuState(self.state_manager))
+        self.state_manager.add_state("game", GameState(self.state_manager))
+        self.state_manager.add_state("settings", SettingsState(self.state_manager))
         
-        pygame.display.flip()  # Swap buffers to update the screen
+        # Set the initial state to main menu
+        self.state_manager.set_state("main_menu")
 
     def run(self):
-        """Main game loop."""
-        while self.is_running:
-            delta_time = self.clock.tick(self.fps) / 1000  # Calculate frame time
-            self.handle_events()  # Handle events like quitting, input, etc.
-            self.update(delta_time)  # Update game state
-            self.render()  # Draw everything
-
-        pygame.quit()
+        while True:
+            delta_time = self.clock.tick(self.fps) / 1000.0
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    return
+                self.state_manager.handle_events(event)
+            
+            self.state_manager.update(delta_time)
+            self.screen.fill((0, 0, 0))  # Clear the screen
+            self.state_manager.render(self.screen)
+            pygame.display.flip()

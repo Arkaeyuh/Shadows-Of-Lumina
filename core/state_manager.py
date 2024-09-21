@@ -21,7 +21,7 @@ class StateManager:
         if self.active_state:
             self.active_state.update(delta_time)
 
-    def render(self, screen):
+    def render(self,screen):
         """Renders the active state."""
         if self.active_state:
             self.active_state.render(screen)
