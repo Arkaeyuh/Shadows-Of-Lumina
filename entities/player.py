@@ -81,6 +81,7 @@ class Player(pygame.sprite.Sprite):
 
         # Player properties
         self.speed = speed
+        self.max_health = 100
         self.health = 100
         self.lumina_energy = 100
         self.max_lumina_energy = 100

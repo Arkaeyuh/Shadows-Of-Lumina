@@ -1,10 +1,8 @@
 from .player import Player
 from .umbrals import Umbral
 from .shadow_lord import Boss
-#from .aeris import Aeris
 from .lumina_spell import LuminaSpell
+from .health_powerup import HealthPowerup
+from .lumina_powerup import LuminaPowerup
 
-# You can now import entities like:
-# from entities import Player, Umbral, Aeris
-
-__all__ = ['Player', 'Umbral', 'Boss', 'Aeris', 'LuminaSpell']
+__all__ = ['Player', 'Umbral', 'Boss', 'LuminaSpell', 'HealthPowerup', 'LuminaPowerup']

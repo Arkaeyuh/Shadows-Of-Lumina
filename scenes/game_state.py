@@ -81,7 +81,7 @@ class GameState:
 
         # Create Room 3 (boss room) with a special door leading to it
         room_4 = Room(room_id="room_4",background_image_path="/world/room4.png", is_boss_room=True)
-        room_4.add_enemy(Boss(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, 2, 64, 64, 500))  # Boss Umbral here
+        room_4.add_enemy(Boss(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, 2, 64, 64, 500,self.state_manager))  # Boss Umbral here
         room_4.add_enemy(Umbral(300, 500, 2, SCREEN_WIDTH, SCREEN_HEIGHT))
         room_4.add_enemy(Umbral(300, 600, 2, SCREEN_WIDTH, SCREEN_HEIGHT))
         room_4.add_enemy(Umbral(300, 200, 2, SCREEN_WIDTH, SCREEN_HEIGHT))
