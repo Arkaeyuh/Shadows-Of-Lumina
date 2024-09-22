@@ -143,6 +143,7 @@ class Player(pygame.sprite.Sprite):
             if umbrals_hit:
                 # Damage all Umbrals hit and remove the spell
                 for umbral in umbrals_hit:
+                    print("umbral damaged")
                     umbral.take_damage(25)  # Deal damage to the Umbral
                 spell.kill()  # Ensure the spell is removed after hitting an Umbraiil
 

@@ -6,7 +6,8 @@ class LuminaSpell(pygame.sprite.Sprite):
 
         # Create a white rectangle to represent the spell
         self.image = pygame.Surface((10, 5))  # Width = 10, Height = 5
-        self.image.fill((255, 255, 255))  # White color
+        self.image.fill((255, 255, 255))  # White coloro
+        
 
         # Set the position of the spell
         self.rect = self.image.get_rect(center=(x, y))

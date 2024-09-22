@@ -109,7 +109,7 @@ class Umbral(pygame.sprite.Sprite):
 
         # Initial animation state
         self.current_frame = 0
-        self.animation_speed = 0.2  # Adjust animation speed (lower = faster)
+        self.animation_speed = 0.1  # Adjust animation speed (lower = faster)
         self.animation_timer = 0
 
         # Set the initial image and rect
@@ -318,6 +318,7 @@ class Umbral(pygame.sprite.Sprite):
     def take_damage(self, amount):
         """Reduce health when hit."""
         self.health -= amount
+        print(f"Umbral takes {amount} damage! Health: {self.health}") 
         if self.health <= 0:
             self.is_dying = True
             self.current_frame = 0
