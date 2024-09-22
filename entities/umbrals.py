@@ -266,18 +266,7 @@ class Umbral(pygame.sprite.Sprite):
         player_pos = Vector2(player.rect.center)
         umbral_pos = Vector2(self.rect.center)
         
-        # Simple distance check for line of sight (you can add raycasting if needed)
         return player_pos.distance_to(umbral_pos) > self.chase_threshold
-
-    # def change_direction(self):
-    #     """Change direction randomly for wandering behavior."""
-    #     directions = [
-    #         pygame.Vector2(1, 0),   # Right
-    #         pygame.Vector2(-1, 0),  # Left
-    #         pygame.Vector2(0, 1),   # Down
-    #         pygame.Vector2(0, -1)   # Up
-    #     ]
-    #     self.direction = directions[random.randint(0, len(directions) - 1)]
     
     def update_direction(self, direction):
         """Update the direction for animations."""

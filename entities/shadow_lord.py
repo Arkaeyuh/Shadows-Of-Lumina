@@ -9,6 +9,7 @@ class Boss(pygame.sprite.Sprite):
 
         # Load the sprite sheet for Boss
         spritesheet = SpriteSheet('assets/spritesheets/shadow_lord_spritesheet.png')
+        self.projectiles2 = pygame.sprite.Group()
 
         # Walk right frames (4 frames)
         self.walk_right_frames = [
@@ -74,6 +75,7 @@ class Boss(pygame.sprite.Sprite):
         self.max_health = health
         self.projectiles = []
         self.cooldown = 0  # Cooldown time between shots
+        self.cooldown2 = 0
 
         # Animation properties
         self.current_frame = 0
@@ -98,7 +100,7 @@ class Boss(pygame.sprite.Sprite):
             if (player_position - boss_position).length_squared() > EPSILON:
                 direction = (player_position - boss_position).normalize()
             else:
-                direction = None
+                direction = self.image.get_rect(center=(1, 1))
 
             # Create a projectile that moves in the direction of the player
             projectile_rect = pygame.Rect(self.rect.centerx - 2, self.rect.centery - 2, 5, 10)
@@ -117,7 +119,7 @@ class Boss(pygame.sprite.Sprite):
 
             # Check if the projectile hits the player
             if projectile['rect'].colliderect(player.rect):
-                player.health -= 10  # Player takes damage if hit
+                player.take_damage(10)  # Player takes damage if hit
                 self.projectiles.remove(projectile)  # Remove projectile on hit
             # Remove projectile if it leaves the screen
             elif not pygame.Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT).colliderect(projectile['rect']):
@@ -168,8 +170,16 @@ class Boss(pygame.sprite.Sprite):
             self.cooldown -= 1
         self.shoot(player)
 
+    # Call the circular attack at specific intervals (or when desired)
+        if self.cooldown2 > 0:
+            self.cooldown2 -=1
+
+        if self.cooldown2 == 0:  # Example trigger for shooting circle projectiles
+            self.shoot_circle_projectiles()
+            self.cooldown2 = 300  # Add a cooldown before shooting the circle again
         # Update projectiles
         self.update_projectiles(player)
+        self.projectiles2.update(player)
 
         # Update animation
         self.animate(delta_time)
@@ -188,6 +198,8 @@ class Boss(pygame.sprite.Sprite):
         # Draw projectiles
         for projectile in self.projectiles:
             pygame.draw.rect(screen, (255, 255, 0), projectile['rect'])
+        
+        self.projectiles2.draw(screen)
 
         self.draw_health_bar(screen)
 
@@ -218,3 +230,43 @@ class Boss(pygame.sprite.Sprite):
         self.health -= damage
         if self.health <= 0:
             self.kill()  # Remove boss from game
+
+    def shoot_circle_projectiles(self):
+        """Boss shoots projectiles in a circular pattern."""
+        boss_pos = self.rect.center
+        num_projectiles = 12  # Number of projectiles in the circle
+        angle_increment = 360 / num_projectiles
+
+        for i in range(num_projectiles):
+            angle = i * angle_increment
+            direction = pygame.math.Vector2(1, 0).rotate(angle)
+            projectile = BossProjectile(boss_pos[0], boss_pos[1], direction)
+            self.projectiles2.add(projectile)
+
+
+
+
+
+
+
+class BossProjectile(pygame.sprite.Sprite):
+    def __init__(self, x, y, direction):
+        super().__init__()
+        self.image = pygame.Surface((10, 10))  # A simple 10x10 projectile
+        self.image.fill((255, 255, 0))  # Yellow color for the projectile
+        self.rect = self.image.get_rect(center=(x, y))
+        self.direction = direction.normalize()  # Normalize the direction vector
+        self.speed = 5  # Speed of the projectile
+
+    def update(self, player):
+        # Move the projectile in its direction
+        self.rect.x += self.direction.x * self.speed
+        self.rect.y += self.direction.y * self.speed
+
+        if self.rect.colliderect(player.rect):
+            player.take_damage(10)  # Player takes damage if hit
+            self.kill()  # Remove
+
+        # Remove the projectile if it goes off screen
+        if self.rect.right < 0 or self.rect.left > SCREEN_WIDTH or self.rect.bottom < 0 or self.rect.top > SCREEN_HEIGHT:
+            self.kill()  # Remove projectile from all sprite groups
