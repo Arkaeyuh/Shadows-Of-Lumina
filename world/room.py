@@ -30,7 +30,7 @@ class Room:
         """Update all room objects (enemies, items)."""
         self.enemies.update(delta_time, player)
         self.powerups.update(delta_time)
-        
+
         for spell in player.spells:
             enemies_hit = pygame.sprite.spritecollide(spell, self.enemies, False)
             if enemies_hit:
@@ -52,27 +52,58 @@ class Door:
         return self.rect.colliderect(player.rect)
 
 class RoomManager:
-    def __init__(self, initial_room):
-        self.current_room = initial_room  # Start in the first room
+    def __init__(self):
+        self.current_room = None  # Start in the first room
         self.rooms = {}  # Dictionary of rooms by room_id
+        self.transition_cooldown = 0
 
     def add_room(self, room):
         self.rooms[room.room_id] = room
+        print(f"Room {room.room_id} added")
+        print(self.rooms)
 
-    def change_room(self, room_id):
+    def change_room(self, room_id, player=None, entering_door=None):
         """Transition to a different room."""
+        print(self.rooms)
         if room_id in self.rooms:
+            print(f"Changing to room: {room_id}")  # Debug message
             self.current_room = self.rooms[room_id]
+
+            # Find the door in the new room that leads back to the current room
+            for door in self.current_room.doors:
+                if door.leads_to == entering_door and player != None:
+                    # Place the player outside the door based on door position
+                    if door.rect.x == 0:  # Left side of the room
+                        player.rect.x = door.rect.x + door.rect.width + 10
+                    elif door.rect.right == SCREEN_WIDTH:  # Right side of the room
+                        player.rect.x = door.rect.x - player.rect.width - 10
+                    elif door.rect.y == 0:  # Top side of the room
+                        player.rect.y = door.rect.y + door.rect.height + 10
+                    elif door.rect.bottom == SCREEN_HEIGHT:  # Bottom side of the room
+                        player.rect.y = door.rect.y - player.rect.height - 10
+
+                    self.transition_cooldown = 1.0  # Set cooldown for 1 second
+                    break
+
+
+        else:
+            print(f"Room {room_id} not found!")  # Handle missing room
 
     def update(self, player, delta_time):
         """Update the current room and check for transitions."""
-        self.current_room.update(delta_time, player)
+        if self.current_room:
+            self.current_room.update(delta_time, player)
+            # Reduce cooldown over time
+            if self.transition_cooldown > 0:
+                self.transition_cooldown -= delta_time
 
-        # Check if player goes through any door
-        for door in self.current_room.doors:
-            if door.check_collision(player):
-                self.change_room(door.leads_to)  # Move to the new room
+            # Only check for door collisions if cooldown is over
+            if self.transition_cooldown <= 0:
+                for door in self.current_room.doors:
+                    if door.check_collision(player):
+                        self.change_room(door.leads_to, player, self.current_room.room_id)
 
     def draw(self, screen):
         """Draw the current room."""
-        self.current_room.draw(screen)
+        if self.current_room:
+            self.current_room.draw(screen)

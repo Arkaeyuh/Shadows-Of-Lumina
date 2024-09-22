@@ -1,5 +1,5 @@
 import pygame
-from entities import Player, Umbral
+from entities import Player, Umbral, Boss
 from world import Room, Door, RoomManager
 from config.settings import SCREEN_WIDTH, SCREEN_HEIGHT
 from ui import HUD
@@ -17,12 +17,14 @@ class GameState:
 
         # Initialize Umbrals and add them to a group
         self.umbrals = pygame.sprite.Group()
+        self.boss = pygame.sprite.Group()
 
         # Initialize HUD for health and Lumina energy display
         self.hud = HUD(self.player, self.screen_width, self.screen_height)
 
         # Initialize rooms and room manager
-        self.room_manager = RoomManager(self.initialize_rooms())
+        self.room_manager = RoomManager()
+        self.initialize_rooms()
 
 
     def handle_events(self, event):
@@ -69,16 +71,17 @@ class GameState:
         room_2.add_enemy(Umbral(400, 200, 2, SCREEN_WIDTH, SCREEN_HEIGHT))
         room_2.add_enemy(Umbral(500, 300, 2, SCREEN_WIDTH, SCREEN_HEIGHT))
         room_2.add_door(Door(0, SCREEN_HEIGHT // 2 - 25, 50, 50, "room_1"))  # Door leading back to Room 1
+        room_2.add_door(Door(SCREEN_WIDTH - 50, SCREEN_HEIGHT // 2 - 25, 50, 50, "room_3"))
 
         # Create Room 3 (boss room) with a special door leading to it
         room_3 = Room(room_id="room_3", is_boss_room=True)
-        room_3.add_enemy(Umbral(600, 300, 2, SCREEN_WIDTH, SCREEN_HEIGHT))  # Boss Umbral here
-        room_3.add_door(Door(SCREEN_WIDTH - 50, SCREEN_HEIGHT // 2 - 25, 50, 50, "room_2"))
+        room_3.add_enemy(Boss(600, 300, 200, 200, 300))  # Boss Umbral here
+        room_3.add_enemy(Umbral(400, 200, 2, SCREEN_WIDTH, SCREEN_HEIGHT))
+        room_3.add_door(Door(0, SCREEN_HEIGHT // 2 - 25, 50, 50, "room_2"))
 
         # Create a room manager and add rooms
-        room_manager = RoomManager(room_1)  # Starting room is Room 1
-        room_manager.add_room(room_1)
-        room_manager.add_room(room_2)
-        room_manager.add_room(room_3)
+        self.room_manager.add_room(room_1)
+        self.room_manager.add_room(room_2)
+        self.room_manager.add_room(room_3)
 
-        return room_1  # Start in Room 1
+        self.room_manager.change_room("room_1", self.player, )
