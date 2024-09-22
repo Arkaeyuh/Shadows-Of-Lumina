@@ -4,12 +4,13 @@ from config import SpriteSheet
 from config.settings import SCREEN_WIDTH, SCREEN_HEIGHT
 
 class Boss(pygame.sprite.Sprite):
-    def __init__(self, x, y, speed, width, height, health):
+    def __init__(self, x, y, speed, width, height, health, state_manager):
         super().__init__()
 
         # Load the sprite sheet for Boss
         spritesheet = SpriteSheet('assets/spritesheets/shadow_lord_spritesheet.png')
         self.projectiles2 = pygame.sprite.Group()
+        self.state_manager = state_manager
 
         # Walk right frames (4 frames)
         self.walk_right_frames = [
@@ -230,6 +231,11 @@ class Boss(pygame.sprite.Sprite):
         self.health -= damage
         if self.health <= 0:
             self.kill()  # Remove boss from game
+
+            from scenes.win_state import WinState
+            win_state = WinState(self.state_manager)
+            self.state_manager.add_state("win", win_state)
+            self.state_manager.set_state("win")
 
     def shoot_circle_projectiles(self):
         """Boss shoots projectiles in a circular pattern."""

@@ -5,6 +5,7 @@ from scenes import GameState
 from scenes import SettingsState
 from scenes import PauseState
 from scenes import DeathState
+from scenes import WinState
 from config.settings import SCREEN_WIDTH, SCREEN_HEIGHT, FPS
 
 class Engine:
@@ -27,6 +28,7 @@ class Engine:
         self.state_manager.add_state("settings", SettingsState(self.state_manager))
         self.state_manager.add_state("pause", PauseState(self.state_manager))  # Register pause state
         self.state_manager.add_state("death", DeathState(self.state_manager))
+        self.state_manager.add_state("win", WinState(self.state_manager))
         # self.state_manager.add_state("titlescreen", TitleScreen(self.state_manager))
         
         # Set the initial state to main menu
