@@ -1,6 +1,7 @@
 from config.settings import SCREEN_WIDTH,SCREEN_HEIGHT
 import pygame
 import os
+from entities import Boss
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -33,11 +34,19 @@ class Room:
 
     def draw(self, screen):
         """Draw the room layout, enemies, and items."""
-        # You could draw room boundaries or background here
         screen.blit(self.background_image, (0, 0))
+
         for door in self.doors:
             door.draw(screen)
+        
+        # Draw all enemies including the boss
         self.enemies.draw(screen)
+
+        # Now loop through enemies and specifically call the `draw()` method for the Boss
+        for enemy in self.enemies:
+            if isinstance(enemy, Boss):
+                enemy.draw(screen)  # Call the Boss's custom draw method
+        
         self.powerups.draw(screen)
 
     def update(self, delta_time, player):
@@ -51,6 +60,7 @@ class Room:
                 for enemy in enemies_hit:
                     enemy.take_damage(25)  # Adjust damage value as needed
                 spell.kill()  # Remove the spell after collision
+
 
 class Door:
     def __init__(self, x, y, width, height, leads_to):

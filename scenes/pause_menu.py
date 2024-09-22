@@ -94,6 +94,9 @@ class PauseState:
         self.state_manager = state_manager
         self.pause_menu = PauseMenu()
 
+
+
+    
     def handle_events(self, event):
         self.pause_menu.update_selection(event)
         if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
@@ -106,6 +109,12 @@ class PauseState:
 
             elif selected_option == "restart":
                 print("Restarting game...")
+                pygame.mixer.music.stop()
+                try:
+                    pygame.mixer.music.load(ASSETS_DIR + '/audio/kingdomedgeost.mp3')  # Replace with game music
+                    pygame.mixer.music.play(-1)
+                except pygame.error as e:
+                    print(f"Error loading game music: {e}")               
                 new_game_state = GameState(self.state_manager)
                 self.state_manager.add_state("game", new_game_state)
                 self.state_manager.set_state("game")
