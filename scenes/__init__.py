@@ -8,4 +8,4 @@ from .win_state import WinState
 from .settings_state import SettingsState
 
 
-__all__ = ['MainMenu', 'MainMenuState', 'DeathState', 'PauseState', 'TitleScreen', 'GameState']
+__all__ = ['MainMenu', 'MainMenuState', 'DeathState', 'PauseState', 'TitleScreen', 'GameState', 'WinState', 'SettingsState']
