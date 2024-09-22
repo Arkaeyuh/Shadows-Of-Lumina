@@ -185,7 +185,6 @@ class Player(pygame.sprite.Sprite):
 
         # Check if enough time has passed to regenerate energy
         if current_time - self.last_regen_time >= 1:  # Every second
-            self.shoot_sound.play()
             # Regenerate lumina energy at the defined rate
             self.lumina_energy += self.lumina_regen_rate * (current_time - self.last_regen_time)
             self.lumina_energy = min(self.lumina_energy, self.max_lumina_energy)  # Clamp to max energy
