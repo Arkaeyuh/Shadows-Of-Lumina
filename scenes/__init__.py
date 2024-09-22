@@ -7,4 +7,4 @@ from .game_state import GameState
 from .settings_state import SettingsState
 
 
-__all__ = ['MainMenu', 'MainMenuState', 'DeathState', 'PauseState', 'TitleScreen', 'GameState']
+__all__ = ['MainMenu', 'MainMenuState', 'GameOver', 'PauseState', 'TitleScreen', 'GameState']

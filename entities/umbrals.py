@@ -6,6 +6,9 @@ import random
 class Umbral(pygame.sprite.Sprite):
     def __init__(self, x, y, speed, screen_width, screen_height):
         super().__init__()
+        self.death_sound = pygame.mixer.Sound('assets/audio/umbral_death.mp3')
+        self.death_sound.set_volume(0.5)
+        self.deathcount = 0
 
         # Load the sprite sheet for Umbral
         spritesheet = SpriteSheet('assets/spritesheets/umbral_spritesheet.png')
@@ -297,6 +300,9 @@ class Umbral(pygame.sprite.Sprite):
             self.animation_timer = 0
 
             if self.is_dying:
+                self.deathcount += 1
+                if(self.deathcount == 1):
+                    self.death_sound.play()
                 # Play death animation
                 self.current_frame += 1
                 if self.current_frame < len(self.death_frames):

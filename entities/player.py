@@ -199,6 +199,7 @@ class Player(pygame.sprite.Sprite):
         if current_time - self.last_spell_time >= self.spell_cooldown:
             if self.lumina_energy >= self.lumina_cost:
                 self.lumina_energy -= self.lumina_cost  # Deplete energy
+                self.shoot_sound.play()
 
                 # Determine direction of the spell
                 if self.direction == "right":
