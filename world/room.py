@@ -92,6 +92,7 @@ class RoomManager:
         self.current_room = None  # Start in the first room
         self.rooms = {}  # Dictionary of rooms by room_id
         self.transition_cooldown = 0
+        self.boss_music_playing = False  # Flag to check if boss music is already playing
 
     def add_room(self, room):
         self.rooms[room.room_id] = room
