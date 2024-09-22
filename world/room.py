@@ -22,7 +22,6 @@ class Room:
         self.background_image = pygame.image.load(ASSETS_DIR + background_image_path).convert()
         self.background_image = pygame.transform.scale(self.background_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
-
     def add_enemy(self, enemy):
         self.enemies.add(enemy)
 
@@ -80,7 +79,7 @@ class RoomManager:
         self.current_room = None  # Start in the first room
         self.rooms = {}  # Dictionary of rooms by room_id
         self.transition_cooldown = 0
-
+        self.boss_music_playing = False
     def add_room(self, room):
         self.rooms[room.room_id] = room
         print(f"Room {room.room_id} added")
@@ -92,6 +91,18 @@ class RoomManager:
         if room_id in self.rooms:
             print(f"Changing to room: {room_id}")  # Debug message
             self.current_room = self.rooms[room_id]
+            if self.current_room.is_boss_room and not self.boss_music_playing:
+                pygame.mixer.music.stop()
+                pygame.mixer.music.load('assets/audio/boss_music.mp3')
+                pygame.mixer.music.set_volume(0.5)
+                pygame.mixer.music.play(-1)  # Loop the music
+                self.boss_music_playing = True  # Set the flag
+
+            # Reset flag if leaving boss room
+            if not self.current_room.is_boss_room and self.boss_music_playing:
+                pygame.mixer.music.stop()
+                self.boss_music_playing = False  # Reset the flag
+
 
             # Find the door in the new room that leads back to the current room
             for door in self.current_room.doors:
