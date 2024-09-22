@@ -11,9 +11,9 @@ class GameState:
         self.state_manager = state_manager
         self.screen_width = SCREEN_WIDTH
         self.screen_height = SCREEN_HEIGHT
-
+        
         # Initialize player
-        self.player = Player(self.screen_width // 2, self.screen_height // 2, 2)  # Define player at screen center
+        self.player = Player(self.screen_width // 2, self.screen_height // 2, 2, self.state_manager)  # Define player at screen center
 
         # Initialize Umbrals and add them to a group
         self.umbrals = pygame.sprite.Group()

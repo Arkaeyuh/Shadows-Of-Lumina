@@ -5,8 +5,11 @@ from config import SpriteSheet
 from .lumina_spell import LuminaSpell
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, x, y, speed):
+    def __init__(self, x, y, speed, state_manager):
         super().__init__()
+        self.shoot_sound = pygame.mixer.Sound('assets/audio/heal.mp3')
+        self.shoot_sound.set_volume(0.35)
+        self.state_manager = state_manager
 
         # Load the sprite sheet
         spritesheet = SpriteSheet('assets/spritesheets/elysia_spritesheet.png')
@@ -162,6 +165,11 @@ class Player(pygame.sprite.Sprite):
                 self.kill()  # Remove the player from the game if health is depleted
                 print("Player has died.")  # Handle death logic here (game over, etc.)
 
+                from scenes.death_state import DeathState
+                death_state = DeathState(self.state_manager)
+                self.state_manager.add_state("death", death_state)
+                self.state_manager.set_state("death")
+
     # def check_umbral_collision(self, umbrals):
     #     """Check for collisions between the player and any umbrals."""
     #     umbrals_hit = pygame.sprite.spritecollide(self, umbrals, False)
@@ -177,6 +185,7 @@ class Player(pygame.sprite.Sprite):
 
         # Check if enough time has passed to regenerate energy
         if current_time - self.last_regen_time >= 1:  # Every second
+            self.shoot_sound.play()
             # Regenerate lumina energy at the defined rate
             self.lumina_energy += self.lumina_regen_rate * (current_time - self.last_regen_time)
             self.lumina_energy = min(self.lumina_energy, self.max_lumina_energy)  # Clamp to max energy
