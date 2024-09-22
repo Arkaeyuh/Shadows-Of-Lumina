@@ -11,6 +11,8 @@ class Boss(pygame.sprite.Sprite):
         spritesheet = SpriteSheet('assets/spritesheets/shadow_lord_spritesheet.png')
         self.projectiles2 = pygame.sprite.Group()
         self.state_manager = state_manager
+        self.title_font_size = SCREEN_WIDTH // 22  # Make the title font relative to the screen widthont similarly
+        self.title_font = pygame.font.Font('assets/images/Rusillaserif-Regular.ttf', self.title_font_size)
 
         # Walk right frames (4 frames)
         self.walk_right_frames = [
@@ -216,6 +218,11 @@ class Boss(pygame.sprite.Sprite):
         # Calculate position: bottom center of the screen
         bar_x = (SCREEN_WIDTH - bar_width) // 2
         bar_y = SCREEN_HEIGHT - bar_height - 20  # 20 pixels above the bottom
+
+        title_text = self.title_font.render("Bale, the Shadow Lord", True, (128, 4, 12))
+        other_text = self.title_font.render("Bale, the Shadow Lord", True, (181, 11, 22))
+        screen.blit(title_text, (SCREEN_WIDTH // 2 - title_text.get_width() // 2, SCREEN_HEIGHT -125))
+        screen.blit(title_text, ((SCREEN_WIDTH // 2 - other_text.get_width() // 2)+2, SCREEN_HEIGHT - 125))
 
         # Draw the black outline
         pygame.draw.rect(screen, (0, 0, 0), (bar_x - outline_thickness, bar_y - outline_thickness, bar_width + outline_thickness * 2, bar_height + outline_thickness * 2))
