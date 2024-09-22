@@ -117,17 +117,30 @@ class RoomManager:
         """Update the current room and check for transitions."""
         if self.current_room:
             self.current_room.update(delta_time, player)
+
             # Reduce cooldown over time
             if self.transition_cooldown > 0:
                 self.transition_cooldown -= delta_time
 
-            # Only check for door collisions if cooldown is over
+            # Only check for door collisions if cooldown is over and boss is defeated (if it's a boss room)
             if self.transition_cooldown <= 0:
-                for door in self.current_room.doors:
-                    if door.check_collision(player):
-                        self.change_room(door.leads_to, player, self.current_room.room_id)
+                if not self.current_room.is_boss_room or self.is_boss_defeated():
+                    # Only allow door transitions if not in a boss room or the boss is defeated
+                    for door in self.current_room.doors:
+                        if door.check_collision(player):
+                            self.change_room(door.leads_to, player, self.current_room.room_id)
 
     def draw(self, screen):
         """Draw the current room."""
         if self.current_room:
             self.current_room.draw(screen)
+
+    def is_boss_defeated(self):
+        """Check if all enemies in the boss room are defeated, particularly the boss."""
+        if self.current_room.is_boss_room:
+            # Check if any boss enemies are still alive
+            for enemy in self.current_room.enemies:
+                if isinstance(enemy, Boss):
+                    if enemy.alive():
+                        return False
+        return True

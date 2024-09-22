@@ -13,7 +13,7 @@ class GameState:
         self.screen_height = SCREEN_HEIGHT
         
         # Initialize player
-        self.player = Player(self.screen_width // 2, self.screen_height // 2, 10, self.state_manager)  # Define player at screen center
+        self.player = Player(self.screen_width // 2, self.screen_height // 2, 3, self.state_manager)  # Define player at screen center
 
         # Initialize Umbrals and add them to a group
         self.umbrals = pygame.sprite.Group()
@@ -81,8 +81,10 @@ class GameState:
 
         # Create Room 3 (boss room) with a special door leading to it
         room_4 = Room(room_id="room_4",background_image_path="/world/room4.png", is_boss_room=True)
-        room_4.add_enemy(Boss(200, 200, 2, 64, 64, 300))  # Boss Umbral here
-        room_4.add_enemy(Umbral(400, 200, 2, SCREEN_WIDTH, SCREEN_HEIGHT))
+        room_4.add_enemy(Boss(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, 2, 64, 64, 500))  # Boss Umbral here
+        room_4.add_enemy(Umbral(300, 500, 2, SCREEN_WIDTH, SCREEN_HEIGHT))
+        room_4.add_enemy(Umbral(300, 600, 2, SCREEN_WIDTH, SCREEN_HEIGHT))
+        room_4.add_enemy(Umbral(300, 200, 2, SCREEN_WIDTH, SCREEN_HEIGHT))
         room_4.add_door(Door(0, SCREEN_HEIGHT // 2 - 65, 50, 150, "room_2"))
 
         # Create a room manager and add rooms

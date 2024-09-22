@@ -84,8 +84,8 @@ class Player(pygame.sprite.Sprite):
         self.health = 100
         self.lumina_energy = 100
         self.max_lumina_energy = 100
-        self.lumina_cost = 10
-        self.spell_range = 50
+        self.lumina_cost = 20
+        self.spell_range = 75
         self.spells = pygame.sprite.Group()
 
         # Cooldown settings
@@ -93,7 +93,7 @@ class Player(pygame.sprite.Sprite):
         self.last_spell_time = 0  # Last time a spell was cast
 
         # Lumina passive regeneration settings
-        self.lumina_regen_rate = 5  # Lumina energy regenerated per second
+        self.lumina_regen_rate = 10  # Lumina energy regenerated per second
         self.last_regen_time = time.time()  # Time of last regeneration
 
         self.damage_cooldown = 1  # 1 second cooldown between taking damage

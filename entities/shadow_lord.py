@@ -176,7 +176,7 @@ class Boss(pygame.sprite.Sprite):
 
         if self.cooldown2 == 0:  # Example trigger for shooting circle projectiles
             self.shoot_circle_projectiles()
-            self.cooldown2 = 300  # Add a cooldown before shooting the circle again
+            self.cooldown2 = 250  # Add a cooldown before shooting the circle again
         # Update projectiles
         self.update_projectiles(player)
         self.projectiles2.update(player)
