@@ -28,8 +28,14 @@ class MainMenu:
         self.title_font_size = SCREEN_WIDTH // 15  # Make the title font relative to the screen width
         self.option_font_size = SCREEN_WIDTH // 40  # Adjust menu option font similarly
 
-        self.title_font = pygame.font.SysFont('Arial', self.title_font_size)
-        self.font = pygame.font.SysFont('Arial', self.option_font_size)
+        try:
+            self.title_font = pygame.font.Font('assets/images/Rusillaserif-Regular.ttf', self.title_font_size)
+            self.font = pygame.font.Font('assets/images/Rusillaserif-Regular.ttf', self.option_font_size)
+        except FileNotFoundError:
+            # Fallback to default font if custom font is not found
+            print("Custom font not found, using default font.")
+            self.title_font = pygame.font.SysFont('Arial', self.title_font_size)
+            self.font = pygame.font.SysFont('Arial', self.option_font_size)
 
         # Load background image
         self.background_image = pygame.image.load(ASSETS_DIR + '/images/star_background.png')

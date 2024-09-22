@@ -1,5 +1,5 @@
 import pygame
-from config.settings import SCREEN_WIDTH, SCREEN_HEIGHT
+from config.settings import SCREEN_WIDTH
 from config.settings import *
 
 import sys
@@ -22,17 +22,20 @@ class PauseMenu:
         self.menu_move_sound = pygame.mixer.Sound(ASSETS_DIR + '/audio/menu_move.mp3')
         self.update_sfx_volume()
 
-
+        self.option_font_size = 1280 // 40
+        self.title_font_size = 1280 // 15
         self.selected_index = 0
-        self.font = pygame.font.SysFont('Arial', 50)
-        
+        self.font = pygame.font.Font('assets/images/Rusillaserif-Regular.ttf', self.option_font_size)
+        self.title_font = pygame.font.Font('assets/images/Rusillaserif-Regular.ttf', self.title_font_size)
         # Define option_font_size to fix the error
-        self.option_font_size = 50  # You can adjust this value based on your screen size
+      # You can adjust this value based on your screen size
 
     def draw(self, screen):
         # Draw background image
         screen.fill((0, 0, 0))
-
+                # Draw the title
+        title_text = self.title_font.render("Paused", True, (255, 255, 255))
+        screen.blit(title_text, (SCREEN_WIDTH // 2 - title_text.get_width() // 2, SCREEN_HEIGHT * 0.2))
         # Menu option Y-position starts at about 60% of the screen height and moves downwards
         start_y = SCREEN_HEIGHT * 0.6
         option_spacing = self.option_font_size * 1.5  # Dynamically space the menu options

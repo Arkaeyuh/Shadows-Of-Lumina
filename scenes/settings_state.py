@@ -23,8 +23,14 @@ class SettingsMenu:
         self.title_font_size = SCREEN_WIDTH // 15
         self.option_font_size = SCREEN_WIDTH // 40
 
-        self.title_font = pygame.font.SysFont('Arial', self.title_font_size)
-        self.font = pygame.font.SysFont('Arial', self.option_font_size)
+        try:
+            self.title_font = pygame.font.Font('assets/images/Rusillaserif-Regular.ttf', self.title_font_size)
+            self.font = pygame.font.Font('assets/images/Rusillaserif-Regular.ttf', self.option_font_size)
+        except FileNotFoundError:
+            # Fallback to default font if custom font is not found
+            print("Custom font not found, using default font.")
+            self.title_font = pygame.font.SysFont('Arial', self.title_font_size)
+            self.font = pygame.font.SysFont('Arial', self.option_font_size)
 
         self.music_volume = pygame.mixer.music.get_volume()
         self.sfx_volume = get_sfx_volume()  # Get global SFX volume
