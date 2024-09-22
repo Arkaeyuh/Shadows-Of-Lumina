@@ -37,9 +37,12 @@ class DeathState:
                 selected_option = self.options[self.selected_index]
 
                 if selected_option == "New Game":
+                    pygame.mixer.music.stop()
                     print("Starting new game...")
                     new_game_state = GameState(self.state_manager)
                     self.state_manager.add_state("game", new_game_state)
+                    pygame.mixer.music.load(ASSETS_DIR + '/audio/kingdomedgeost.mp3')  # Replace with game music
+                    pygame.mixer.music.play(-1)
                     self.state_manager.set_state("game")
 
                 elif selected_option == "Main Menu":
