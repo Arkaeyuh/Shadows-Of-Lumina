@@ -7,6 +7,8 @@ from .lumina_spell import LuminaSpell
 class Player(pygame.sprite.Sprite):
     def __init__(self, x, y, speed):
         super().__init__()
+        self.shoot_sound = pygame.mixer.Sound('assets/audio/heal.mp3')
+        self.shoot_sound.set_volume(0.35)
 
         # Load the sprite sheet
         spritesheet = SpriteSheet('assets/spritesheets/elysia_spritesheet.png')
@@ -188,6 +190,7 @@ class Player(pygame.sprite.Sprite):
         current_time = time.time()
 
         if current_time - self.last_spell_time >= self.spell_cooldown:
+            self.shoot_sound.play()
             if self.lumina_energy >= self.lumina_cost:
                 self.lumina_energy -= self.lumina_cost  # Deplete energy
 
