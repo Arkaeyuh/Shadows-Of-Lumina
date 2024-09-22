@@ -198,7 +198,7 @@ class Boss(pygame.sprite.Sprite):
 
         # Draw projectiles
         for projectile in self.projectiles:
-            pygame.draw.rect(screen, (255, 255, 0), projectile['rect'])
+            pygame.draw.rect(screen, (196, 4, 11), projectile['rect'])
         
         self.projectiles2.draw(screen)
 
@@ -259,7 +259,7 @@ class BossProjectile(pygame.sprite.Sprite):
     def __init__(self, x, y, direction):
         super().__init__()
         self.image = pygame.Surface((10, 10))  # A simple 10x10 projectile
-        self.image.fill((255, 255, 0))  # Yellow color for the projectile
+        self.image.fill((196, 4, 11))  # Yellow color for the projectile
         self.rect = self.image.get_rect(center=(x, y))
         self.direction = direction.normalize()  # Normalize the direction vector
         self.speed = 5  # Speed of the projectile
