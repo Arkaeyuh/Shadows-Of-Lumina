@@ -89,7 +89,7 @@ class GameState:
         room_3.add_enemy(Umbral(400, SCREEN_HEIGHT // 2 - 200, 2, SCREEN_WIDTH, SCREEN_HEIGHT))
         room_3.add_enemy(Umbral(800, SCREEN_HEIGHT // 2 - 200, 2, SCREEN_WIDTH, SCREEN_HEIGHT))
         room_3.add_powerup(LuminaPowerup(100, 100))
-        room_3.add_powerup(HealthPowerup(SCREEN_WIDTH - 100, SCREEN_HEIGHT - 100))
+        room_3.add_powerup(HealthPowerup(SCREEN_WIDTH - 150, SCREEN_HEIGHT - 150))
         room_3.add_door(Door(SCREEN_WIDTH // 2 - 65, 0, 150, 50, "room_1"))  # Door leading back to Room 1
 
         # Create Room 4 (boss room)

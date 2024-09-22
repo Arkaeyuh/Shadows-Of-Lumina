@@ -1,16 +1,17 @@
 import pygame
 
 class Powerup(pygame.sprite.Sprite):
-
-    def __init__(self, x, y, color, width, height) -> None:
+    def __init__(self, x, y, image_path=None, color=(255, 255, 255), width=30, height=30):
         super().__init__()
+        if image_path:
+            self.image = pygame.image.load(image_path).convert_alpha()
+            self.image = pygame.transform.scale(self.image, (width, height))
+        else:
+            self.image = pygame.Surface((width, height))
+            self.image.fill(color)
         
-        self.image = pygame.Surface((width, height))
-        self.image.fill(color)
         self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
+        self.rect.topleft = (x, y)
 
-    def apply(self, player) -> None:
-        """This method will be overridden in the child classes."""
-        pass
+    def draw(self, screen):
+        screen.blit(self.image, self.rect)
