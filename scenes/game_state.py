@@ -61,27 +61,34 @@ class GameState:
     def initialize_rooms(self):
         """Initialize all rooms and return the starting room."""
         # Create Room 1 and add enemies and a door
-        room_1 = Room(room_id="room_1")
+        room_1 = Room(room_id="room_1",background_image_path="/world/room1.png")
         room_1.add_enemy(Umbral(200, 200, 2, SCREEN_WIDTH, SCREEN_HEIGHT))
         room_1.add_enemy(Umbral(300, 300, 2, SCREEN_WIDTH, SCREEN_HEIGHT))
-        room_1.add_door(Door(SCREEN_WIDTH - 50, SCREEN_HEIGHT // 2 - 25, 50, 50, "room_2"))  # Door leading to Room 2
+        room_1.add_door(Door(SCREEN_WIDTH - 50, SCREEN_HEIGHT // 2 - 75, 50, 150, "room_2"))  # Door leading to Room 2
+        room_1.add_door(Door(SCREEN_WIDTH // 2 - 75, SCREEN_HEIGHT - 50, 150, 50, "room_3"))
 
         # Create Room 2 with a door leading back to Room 1
-        room_2 = Room(room_id="room_2")
+        room_2 = Room(room_id="room_2",background_image_path="/world/room2.png")
         room_2.add_enemy(Umbral(400, 200, 2, SCREEN_WIDTH, SCREEN_HEIGHT))
         room_2.add_enemy(Umbral(500, 300, 2, SCREEN_WIDTH, SCREEN_HEIGHT))
-        room_2.add_door(Door(0, SCREEN_HEIGHT // 2 - 25, 50, 50, "room_1"))  # Door leading back to Room 1
-        room_2.add_door(Door(SCREEN_WIDTH - 50, SCREEN_HEIGHT // 2 - 25, 50, 50, "room_3"))
+        room_2.add_door(Door(0, SCREEN_HEIGHT // 2 - 65, 50, 150, "room_1"))  # Door leading back to Room 1
+        room_2.add_door(Door(SCREEN_WIDTH - 50, SCREEN_HEIGHT // 2 - 65, 50, 150, "room_4"))
+
+        room_3 = Room(room_id="room_3",background_image_path="/world/room3.png")
+        room_3.add_enemy(Umbral(400, 200, 2, SCREEN_WIDTH, SCREEN_HEIGHT))
+        room_3.add_enemy(Umbral(500, 300, 2, SCREEN_WIDTH, SCREEN_HEIGHT))
+        room_3.add_door(Door(SCREEN_WIDTH // 2 - 65, 0, 150, 50, "room_1"))  # Door leading back to Room 1
 
         # Create Room 3 (boss room) with a special door leading to it
-        room_3 = Room(room_id="room_3", is_boss_room=True)
-        room_3.add_enemy(Boss(600, 300, 200, 200, 300))  # Boss Umbral here
-        room_3.add_enemy(Umbral(400, 200, 2, SCREEN_WIDTH, SCREEN_HEIGHT))
-        room_3.add_door(Door(0, SCREEN_HEIGHT // 2 - 25, 50, 50, "room_2"))
+        room_4 = Room(room_id="room_4",background_image_path="/world/room4.png", is_boss_room=True)
+        room_4.add_enemy(Boss(600, 300, 200, 200, 300))  # Boss Umbral here
+        room_4.add_enemy(Umbral(400, 200, 2, SCREEN_WIDTH, SCREEN_HEIGHT))
+        room_4.add_door(Door(0, SCREEN_HEIGHT // 2 - 65, 50, 150, "room_2"))
 
         # Create a room manager and add rooms
         self.room_manager.add_room(room_1)
         self.room_manager.add_room(room_2)
         self.room_manager.add_room(room_3)
+        self.room_manager.add_room(room_4)
 
         self.room_manager.change_room("room_1", self.player, )

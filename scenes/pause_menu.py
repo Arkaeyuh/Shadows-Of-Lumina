@@ -25,8 +25,8 @@ class PauseMenu:
         self.option_font_size = 1280 // 40
         self.title_font_size = 1280 // 15
         self.selected_index = 0
-        self.font = pygame.font.Font('assets/images/Rusillaserif-Regular.ttf', self.option_font_size)
-        self.title_font = pygame.font.Font('assets/images/Rusillaserif-Regular.ttf', self.title_font_size)
+        self.font = pygame.font.Font(ASSETS_DIR + '/images/Rusillaserif-Regular.ttf', self.option_font_size)
+        self.title_font = pygame.font.Font(ASSETS_DIR + '/images/Rusillaserif-Regular.ttf', self.title_font_size)
         # Define option_font_size to fix the error
       # You can adjust this value based on your screen size
 

@@ -1,13 +1,26 @@
 from config.settings import SCREEN_WIDTH,SCREEN_HEIGHT
 import pygame
+import os
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# Go one folder up (out of ProjectRoot)
+PARENT_DIR = os.path.dirname(BASE_DIR)
+
+# Now construct the path to the assets/images folder
+ASSETS_DIR = os.path.join(PARENT_DIR, 'assets')
+
 
 class Room:
-    def __init__(self, room_id, is_boss_room=False):
+    def __init__(self, room_id, background_image_path=f'/world/test.png', is_boss_room=False):
         self.room_id = room_id  # Unique identifier for the room
         self.is_boss_room = is_boss_room  # Whether this room contains the boss
         self.enemies = pygame.sprite.Group()  # Group for enemies in the room
         self.doors = []  # List of doors leading to other rooms
         self.powerups = pygame.sprite.Group()  # Group for powerups or items
+        self.background_image = pygame.image.load(ASSETS_DIR + background_image_path).convert()
+        self.background_image = pygame.transform.scale(self.background_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
+
 
     def add_enemy(self, enemy):
         self.enemies.add(enemy)
@@ -21,6 +34,7 @@ class Room:
     def draw(self, screen):
         """Draw the room layout, enemies, and items."""
         # You could draw room boundaries or background here
+        screen.blit(self.background_image, (0, 0))
         for door in self.doors:
             door.draw(screen)
         self.enemies.draw(screen)
@@ -45,7 +59,7 @@ class Door:
 
     def draw(self, screen):
         """Draw the door."""
-        pygame.draw.rect(screen, (255, 255, 0), self.rect)  # Yellow door
+        # pygame.draw.rect(screen, (255, 255, 0), self.rect)  # Yellow door
 
     def check_collision(self, player):
         """Check if the player collides with the door."""
