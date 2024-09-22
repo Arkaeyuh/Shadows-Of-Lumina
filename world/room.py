@@ -22,6 +22,8 @@ class Room:
         self.powerups = pygame.sprite.Group()  # Group for powerups or items
         self.background_image = pygame.image.load(ASSETS_DIR + background_image_path).convert()
         self.background_image = pygame.transform.scale(self.background_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
+        self.power_sound = pygame.mixer.Sound('assets/audio/powerup.mp3')
+        self.power_sound.set_volume(0.35)
 
 
     def add_enemy(self, enemy) -> None:
@@ -69,7 +71,7 @@ class Room:
                 spell.kill()  # Remove the spell after collision
 
         for powerup in pygame.sprite.spritecollide(player, self.powerups, True):  # True removes the powerup
-
+            self.power_sound.play()
             powerup.apply(player)  # Apply the effect of the powerup
 
 
