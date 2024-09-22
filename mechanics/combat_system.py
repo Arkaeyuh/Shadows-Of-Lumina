@@ -4,7 +4,7 @@ class CombatSystem:
         self.enemies = enemies
 
     def attack(self, target):
-        damage = 20  # Example damage value
+        damage = 20 # Example damage value
         target.health -= damage
     
     def check_collisions(self):

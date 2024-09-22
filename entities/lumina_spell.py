@@ -1,13 +1,12 @@
 import pygame
 
 class LuminaSpell(pygame.sprite.Sprite):
-    def __init__(self, x, y, direction, speed=5):
+    def __init__(self, x, y, direction, speed=5) -> None:
         super().__init__()
 
         # Create a white rectangle to represent the spell
         self.image = pygame.Surface((10, 5))  # Width = 10, Height = 5
-        self.image.fill((255, 255, 255))  # White coloro
-        
+        self.image.fill((255, 255, 255))  # White color
 
         # Set the position of the spell
         self.rect = self.image.get_rect(center=(x, y))
@@ -18,7 +17,8 @@ class LuminaSpell(pygame.sprite.Sprite):
         self.range = 400  # Maximum distance the spell can travel
         self.distance_traveled = 0
 
-    def update(self, delta_time):
+    def update(self, delta_time) -> None:
+        
         # Move the spell in the specified direction
         move_x = self.direction.x * self.speed 
         move_y = self.direction.y * self.speed  

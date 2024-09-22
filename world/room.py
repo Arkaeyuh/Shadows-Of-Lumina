@@ -13,7 +13,8 @@ ASSETS_DIR = os.path.join(PARENT_DIR, 'assets')
 
 
 class Room:
-    def __init__(self, room_id, background_image_path=f'/world/test.png', is_boss_room=False):
+    def __init__(self, room_id, background_image_path=f'/world/test.png', is_boss_room=False) -> None:
+
         self.room_id = room_id  # Unique identifier for the room
         self.is_boss_room = is_boss_room  # Whether this room contains the boss
         self.enemies = pygame.sprite.Group()  # Group for enemies in the room
@@ -22,17 +23,19 @@ class Room:
         self.background_image = pygame.image.load(ASSETS_DIR + background_image_path).convert()
         self.background_image = pygame.transform.scale(self.background_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
-    def add_enemy(self, enemy):
+
+    def add_enemy(self, enemy) -> None:
         self.enemies.add(enemy)
 
-    def add_door(self, door):
+    def add_door(self, door) -> None:
         self.doors.append(door)
 
-    def add_powerup(self, powerup):
+    def add_powerup(self, powerup) -> None:
         self.powerups.add(powerup)
 
-    def draw(self, screen):
+    def draw(self, screen) -> None:
         """Draw the room layout, enemies, and items."""
+
         screen.blit(self.background_image, (0, 0))
 
         for door in self.doors:
@@ -41,53 +44,63 @@ class Room:
         # Draw all enemies including the boss
         self.enemies.draw(screen)
 
-        # Now loop through enemies and specifically call the `draw()` method for the Boss
+        # Now loop through enemies and specifically call the draw() method for the Boss
         for enemy in self.enemies:
             if isinstance(enemy, Boss):
                 enemy.draw(screen)  # Call the Boss's custom draw method
         
         self.powerups.draw(screen)
 
-    def update(self, delta_time, player):
+    def update(self, delta_time, player) -> None:
         """Update all room objects (enemies, items)."""
+
         self.enemies.update(delta_time, player)
         self.powerups.update(delta_time)
 
         for spell in player.spells:
             enemies_hit = pygame.sprite.spritecollide(spell, self.enemies, False)
+
             if enemies_hit:
+
                 for enemy in enemies_hit:
+
                     enemy.take_damage(25)  # Adjust damage value as needed
+
                 spell.kill()  # Remove the spell after collision
+
+        for powerup in pygame.sprite.spritecollide(player, self.powerups, True):  # True removes the powerup
+
+            powerup.apply(player)  # Apply the effect of the powerup
 
 
 class Door:
-    def __init__(self, x, y, width, height, leads_to):
+    def __init__(self, x, y, width, height, leads_to) -> None:
         self.rect = pygame.Rect(x, y, width, height)  # Door's position and size
         self.leads_to = leads_to  # The ID of the room this door leads to
 
-    def draw(self, screen):
+    def draw(self, screen) -> None:
         """Draw the door."""
-        # pygame.draw.rect(screen, (255, 255, 0), self.rect)  # Yellow door
+        # pygame.draw.rect(screen, (255, 255, 0), self.rect)  # Yellow door, use this to see where the doors are when we place them and then we choose not to draw
 
-    def check_collision(self, player):
+    def check_collision(self, player) -> bool:
         """Check if the player collides with the door."""
+
         return self.rect.colliderect(player.rect)
 
 class RoomManager:
-    def __init__(self):
+    def __init__(self) -> None:
         self.current_room = None  # Start in the first room
         self.rooms = {}  # Dictionary of rooms by room_id
         self.transition_cooldown = 0
-        self.boss_music_playing = False
+
     def add_room(self, room):
         self.rooms[room.room_id] = room
         print(f"Room {room.room_id} added")
         print(self.rooms)
 
-    def change_room(self, room_id, player=None, entering_door=None):
+    def change_room(self, room_id, player=None, entering_door=None) -> None:
         """Transition to a different room."""
-        print(self.rooms)
+
         if room_id in self.rooms:
             print(f"Changing to room: {room_id}")  # Debug message
             self.current_room = self.rooms[room_id]
@@ -106,14 +119,19 @@ class RoomManager:
 
             # Find the door in the new room that leads back to the current room
             for door in self.current_room.doors:
+
                 if door.leads_to == entering_door and player != None:
                     # Place the player outside the door based on door position
+
                     if door.rect.x == 0:  # Left side of the room
                         player.rect.x = door.rect.x + door.rect.width + 10
+
                     elif door.rect.right == SCREEN_WIDTH:  # Right side of the room
                         player.rect.x = door.rect.x - player.rect.width - 10
+
                     elif door.rect.y == 0:  # Top side of the room
                         player.rect.y = door.rect.y + door.rect.height + 10
+
                     elif door.rect.bottom == SCREEN_HEIGHT:  # Bottom side of the room
                         player.rect.y = door.rect.y - player.rect.height - 10
 
@@ -124,8 +142,9 @@ class RoomManager:
         else:
             print(f"Room {room_id} not found!")  # Handle missing room
 
-    def update(self, player, delta_time):
+    def update(self, player, delta_time) -> None:
         """Update the current room and check for transitions."""
+
         if self.current_room:
             self.current_room.update(delta_time, player)
 
@@ -141,13 +160,15 @@ class RoomManager:
                         if door.check_collision(player):
                             self.change_room(door.leads_to, player, self.current_room.room_id)
 
-    def draw(self, screen):
+    def draw(self, screen) -> None:
         """Draw the current room."""
+
         if self.current_room:
             self.current_room.draw(screen)
 
-    def is_boss_defeated(self):
+    def is_boss_defeated(self) -> bool:
         """Check if all enemies in the boss room are defeated, particularly the boss."""
+
         if self.current_room.is_boss_room:
             # Check if any boss enemies are still alive
             for enemy in self.current_room.enemies:

@@ -1,5 +1,5 @@
 import pygame
-from entities import Player, Umbral, Boss
+from entities import *
 from world import Room, Door, RoomManager
 from config.settings import SCREEN_WIDTH, SCREEN_HEIGHT
 from ui import HUD
@@ -58,33 +58,46 @@ class GameState:
         # Update the screen (swap buffers)
         pygame.display.flip()
 
-    def initialize_rooms(self):
+    def initialize_rooms(self) -> None:
         """Initialize all rooms and return the starting room."""
+
         # Create Room 1 and add enemies and a door
         room_1 = Room(room_id="room_1",background_image_path="/world/room1.png")
-        room_1.add_enemy(Umbral(200, 200, 2, SCREEN_WIDTH, SCREEN_HEIGHT))
-        room_1.add_enemy(Umbral(300, 300, 2, SCREEN_WIDTH, SCREEN_HEIGHT))
+        room_1.add_enemy(Umbral(400, SCREEN_HEIGHT // 2, 2, SCREEN_WIDTH, SCREEN_HEIGHT))
+        room_1.add_enemy(Umbral(800, SCREEN_HEIGHT // 2, 2, SCREEN_WIDTH, SCREEN_HEIGHT))
         room_1.add_door(Door(SCREEN_WIDTH - 50, SCREEN_HEIGHT // 2 - 75, 50, 150, "room_2"))  # Door leading to Room 2
-        room_1.add_door(Door(SCREEN_WIDTH // 2 - 75, SCREEN_HEIGHT - 50, 150, 50, "room_3"))
+        room_1.add_door(Door(SCREEN_WIDTH // 2 - 75, SCREEN_HEIGHT - 50, 150, 50, "room_3"))  # Door to room 3
+        room_1.add_powerup(LuminaPowerup(150, 150))  # Adds Lumina powerup
+        room_1.add_powerup(HealthPowerup(300, 300))  # Adds Health powerup
 
         # Create Room 2 with a door leading back to Room 1
         room_2 = Room(room_id="room_2",background_image_path="/world/room2.png")
-        room_2.add_enemy(Umbral(400, 200, 2, SCREEN_WIDTH, SCREEN_HEIGHT))
-        room_2.add_enemy(Umbral(500, 300, 2, SCREEN_WIDTH, SCREEN_HEIGHT))
+        room_2.add_enemy(Umbral(400, SCREEN_HEIGHT // 2, 2, SCREEN_WIDTH, SCREEN_HEIGHT))
+        room_2.add_enemy(Umbral(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 10, 2, SCREEN_WIDTH, SCREEN_HEIGHT))
+        room_2.add_enemy(Umbral(SCREEN_WIDTH //2, SCREEN_HEIGHT // 2 - 100, 2, SCREEN_WIDTH, SCREEN_HEIGHT))
+        room_2.add_enemy(Umbral(200, SCREEN_HEIGHT // 2, 2, SCREEN_WIDTH, SCREEN_HEIGHT))
+        room_2.add_powerup(HealthPowerup(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
         room_2.add_door(Door(0, SCREEN_HEIGHT // 2 - 65, 50, 150, "room_1"))  # Door leading back to Room 1
-        room_2.add_door(Door(SCREEN_WIDTH - 50, SCREEN_HEIGHT // 2 - 65, 50, 150, "room_4"))
+        room_2.add_door(Door(SCREEN_WIDTH - 50, SCREEN_HEIGHT // 2 - 65, 50, 150, "room_4")) # Door to room 4
 
+        #Create a room 3 with power ups but more enemies
         room_3 = Room(room_id="room_3",background_image_path="/world/room3.png")
-        room_3.add_enemy(Umbral(400, 200, 2, SCREEN_WIDTH, SCREEN_HEIGHT))
-        room_3.add_enemy(Umbral(500, 300, 2, SCREEN_WIDTH, SCREEN_HEIGHT))
+        room_3.add_enemy(Umbral(400, SCREEN_HEIGHT // 2, 2, SCREEN_WIDTH, SCREEN_HEIGHT))
+        room_3.add_enemy(Umbral(800, SCREEN_HEIGHT // 2, 2, SCREEN_WIDTH, SCREEN_HEIGHT))
+        room_3.add_enemy(Umbral(400, SCREEN_HEIGHT // 2 + 200, 2, SCREEN_WIDTH, SCREEN_HEIGHT))
+        room_3.add_enemy(Umbral(800, SCREEN_HEIGHT // 2 + 200, 2, SCREEN_WIDTH, SCREEN_HEIGHT))
+        room_3.add_enemy(Umbral(400, SCREEN_HEIGHT // 2 - 200, 2, SCREEN_WIDTH, SCREEN_HEIGHT))
+        room_3.add_enemy(Umbral(800, SCREEN_HEIGHT // 2 - 200, 2, SCREEN_WIDTH, SCREEN_HEIGHT))
+        room_3.add_powerup(LuminaPowerup(100, 100))
+        room_3.add_powerup(HealthPowerup(SCREEN_WIDTH - 100, SCREEN_HEIGHT - 100))
         room_3.add_door(Door(SCREEN_WIDTH // 2 - 65, 0, 150, 50, "room_1"))  # Door leading back to Room 1
 
-        # Create Room 3 (boss room) with a special door leading to it
+        # Create Room 4 (boss room)
         room_4 = Room(room_id="room_4",background_image_path="/world/room4.png", is_boss_room=True)
-        room_4.add_enemy(Boss(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, 2, 64, 64, 500))  # Boss Umbral here
-        room_4.add_enemy(Umbral(300, 500, 2, SCREEN_WIDTH, SCREEN_HEIGHT))
-        room_4.add_enemy(Umbral(300, 600, 2, SCREEN_WIDTH, SCREEN_HEIGHT))
-        room_4.add_enemy(Umbral(300, 200, 2, SCREEN_WIDTH, SCREEN_HEIGHT))
+        room_4.add_enemy(Boss(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, 2, 64, 64, 500, self.state_manager))  # Boss 
+        room_4.add_enemy(Umbral(760, SCREEN_HEIGHT // 2, 2, SCREEN_WIDTH, SCREEN_HEIGHT))
+        room_4.add_enemy(Umbral(500, SCREEN_HEIGHT // 2, 2, SCREEN_WIDTH, SCREEN_HEIGHT))
+        room_4.add_enemy(Umbral(200, SCREEN_HEIGHT // 2, 2, SCREEN_WIDTH, SCREEN_HEIGHT))
         room_4.add_door(Door(0, SCREEN_HEIGHT // 2 - 65, 50, 150, "room_2"))
 
         # Create a room manager and add rooms
