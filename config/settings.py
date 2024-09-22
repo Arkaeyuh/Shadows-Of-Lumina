@@ -16,3 +16,14 @@ WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 LIGHT_BLUE = (173, 216, 230)
 GOLD = (255, 215, 0)
+
+
+sfx_volume = 0.5  # Default SFX volume
+
+def get_sfx_volume():
+    global sfx_volume
+    return sfx_volume
+
+def set_sfx_volume(volume):
+    global sfx_volume
+    sfx_volume = volume

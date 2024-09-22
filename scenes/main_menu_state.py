@@ -1,14 +1,27 @@
 import pygame
 import sys
+import os
+
+# Get the directory of the current file (main.py is inside ProjectRoot)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# Go one folder up (out of ProjectRoot)
+PARENT_DIR = os.path.dirname(BASE_DIR)
+
+# Now construct the path to the assets/images folder
+ASSETS_DIR = os.path.join(PARENT_DIR, 'assets')
+
+# Example of loading the image
 
 from config.settings import *
+from scenes.game_state import GameState
 
 # Load necessary assets and sounds in the constructor
 pygame.mixer.init()
 
 class MainMenu:
     def __init__(self):
-        self.options = ["New Game", "Continue", "Settings", "Exit"]
+        self.options = ["New Game", "Settings", "Exit"]
         self.selected_index = 0
         
         # Scale the title font dynamically based on screen width
@@ -19,15 +32,14 @@ class MainMenu:
         self.font = pygame.font.SysFont('Arial', self.option_font_size)
 
         # Load background image
-        self.background_image = pygame.image.load('assets/images/star_background.png')
+        self.background_image = pygame.image.load(ASSETS_DIR + '/images/star_background.png')
         self.background_image = pygame.transform.scale(self.background_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
-        # Load sounds
-        self.menu_sound = pygame.mixer.Sound('assets/audio/menu_select.mp3')
-        self.menu_move_sound = pygame.mixer.Sound('assets/audio/menu_move.mp3')
-        pygame.mixer.music.load('assets/audio/Hollow Knight OST - Title Theme.mp3')
-        pygame.mixer.music.set_volume(0.5)
-        pygame.mixer.music.play(-1)
+        # Load sounds (effects only)
+        self.menu_sound = pygame.mixer.Sound(ASSETS_DIR + '/audio/menu_select.mp3')
+        self.menu_move_sound = pygame.mixer.Sound(ASSETS_DIR + '/audio/menu_move.mp3')
+        self.update_sfx_volume()
+
 
     def draw(self, screen):
         # Draw background image
@@ -58,7 +70,13 @@ class MainMenu:
 
             screen.blit(text, (text_x, text_y))
 
+    def update_sfx_volume(self):
+        """Ensure that all sounds use the global SFX volume."""
+        self.menu_sound.set_volume(get_sfx_volume())
+        self.menu_move_sound.set_volume(get_sfx_volume())
+
     def update_selection(self, event):
+        self.update_sfx_volume()  # Ensure the correct volume is applied
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_DOWN:
                 self.selected_index = (self.selected_index + 1) % len(self.options)
@@ -68,40 +86,57 @@ class MainMenu:
                 self.menu_move_sound.play()  # Play sound effect when moving through options
 
     def select_option(self):
+        self.update_sfx_volume()  # Ensure the correct volume is applied
         self.menu_sound.play()  # Play sound effect when selecting an option
         if self.selected_index == 0:
             return "new_game"
         elif self.selected_index == 1:
-            return "continue"
-        elif self.selected_index == 2:
             return "settings"
-        elif self.selected_index == 3:
+        elif self.selected_index == 2:
             return "exit"
-            
 
 class MainMenuState:
     def __init__(self, state_manager):
         self.state_manager = state_manager
-        self.menu = MainMenu()  # Initialize the MainMenu
-        print("MainMenuState initialized")  # Debugging output
+        self.menu = MainMenu()
+
+        # Load and play the main menu music here, AFTER initializing the menu
+        try:
+            pygame.mixer.music.stop()
+            pygame.mixer.music.load(ASSETS_DIR + '/audio/Hollow Knight OST - Title Theme.mp3')
+            pygame.mixer.music.set_volume(0.5)
+            pygame.mixer.music.play(-1)  # Loop the menu music
+        except pygame.error as e:
+            print(f"Error loading music: {e}")
 
     def handle_events(self, event):
         self.menu.update_selection(event)
         if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
             selection = self.menu.select_option()
-            print(f"User selected: {selection}")  # Debugging output
+
             if selection == "new_game":
-                print("Switching to 'game' state")  # Debugging output
-                self.state_manager.set_state("game")  # Switch to GameState
+                print("Starting new game...")
+                new_game_state = GameState(self.state_manager)
+                pygame.mixer.music.stop()
+                try:
+                    pygame.mixer.music.load(ASSETS_DIR + '/audio/kingdomedgeost.mp3')  # Replace with game music
+                    pygame.mixer.music.play(-1)
+                except pygame.error as e:
+                    print(f"Error loading game music: {e}")
+
+                self.state_manager.add_state("game", new_game_state)
+                self.state_manager.set_state("game")
+
             elif selection == "settings":
-                print("Switching to 'settings' state")  # Debugging output
-                self.state_manager.set_state("settings")  # Switch to SettingsState
+                print("Opening settings menu...")  # Debug print
+                self.state_manager.set_state("settings")  # Transition to SettingsState
+
             elif selection == "exit":
                 pygame.quit()
                 sys.exit()
 
     def update(self, delta_time):
-        pass  # No need to update the main menu
+        pass
 
     def render(self, screen):
         self.menu.draw(screen)

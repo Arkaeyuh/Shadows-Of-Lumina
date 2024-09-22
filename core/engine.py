@@ -3,7 +3,7 @@ from core.state_manager import StateManager
 from scenes import MainMenuState
 from scenes import GameState
 from scenes import SettingsState
-from scenes import TitleScreen
+from scenes import PauseState
 from config.settings import SCREEN_WIDTH, SCREEN_HEIGHT, FPS
 
 class Engine:
@@ -24,6 +24,7 @@ class Engine:
         self.state_manager.add_state("main_menu", MainMenuState(self.state_manager))
         self.state_manager.add_state("game", GameState(self.state_manager))
         self.state_manager.add_state("settings", SettingsState(self.state_manager))
+        self.state_manager.add_state("pause", PauseState(self.state_manager))  # Register pause state
         # self.state_manager.add_state("titlescreen", TitleScreen(self.state_manager))
         
         # Set the initial state to main menu
@@ -36,6 +37,12 @@ class Engine:
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     return
+                
+                # If the ESC key is pressed, switch to the pause menu
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                    self.state_manager.set_state("pause")
+                    pygame.mixer.music.pause()
+                    
                 self.state_manager.handle_events(event)
             
             self.state_manager.update(delta_time)

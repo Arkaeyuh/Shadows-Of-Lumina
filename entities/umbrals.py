@@ -129,16 +129,22 @@ class Umbral(pygame.sprite.Sprite):
         self.screen_height = screen_height
 
         # Wandering cooldown
+        self.spawn_position = Vector2(x, y)
         self.wander_timer = 0
-        self.wander_interval = 5  # Every 5 seconds change direction
+        self.wander_interval = random.uniform(1.5, 3.5)  # Every 5 seconds change direction
 
         # Distance threshold to stop wandering and start chasing
-        self.chase_threshold = 200  # Distance in pixels
         self.is_attacking = False
         # Cooldown for attacks
         self.attack_cooldown = 1  # 1 second cooldown between attacks
         self.last_attack_time = 0
         self.damage_dealt = False
+
+        self.chase_threshold = 150  # Distance to trigger chase
+        self.max_wander_distance = 100  # Max distance from spawn to wander
+
+        self.line_of_sight_blocked = False  # Line of sight detection
+        self.is_chasing = False
 
 
       # Death state
@@ -158,24 +164,32 @@ class Umbral(pygame.sprite.Sprite):
         umbral_position = pygame.Vector2(self.rect.center)
         distance_to_player = umbral_position.distance_to(player_position)
 
+        self.line_of_sight_blocked = self.check_line_of_sight(player)
+
         if self.is_attacking:
             # If attacking, we won't move
             self.animate(delta_time, player)
             return
 
         # Stop wandering and chase player if close enough
-        if distance_to_player < 50:  # Attack range
+        if distance_to_player < 50 and self.is_chasing:  # Attack range
             self.is_wandering = False
             self.attack_player(player)
-        elif distance_to_player < self.chase_threshold:
-            self.is_wandering = False
-        else:
-            self.is_wandering = True
 
-        if self.is_wandering:
-            self.wander(delta_time)
-        elif not self.is_attacking:
-            self.chase_player(player)
+        if self.is_chasing:
+            if distance_to_player > self.chase_threshold or self.line_of_sight_blocked:
+                # Exit chase if player moves too far or line of sight is broken
+                self.is_chasing = False
+                self.is_wandering = True
+            else:
+                self.chase_player(player)
+        elif self.is_wandering:
+            if distance_to_player < self.chase_threshold and not self.line_of_sight_blocked:
+                # Start chasing if player is in range and visible
+                self.is_chasing = True
+                self.is_wandering = False
+            else:
+                self.wander(delta_time)
 
         # Handle animation
         self.animate(delta_time, player)
@@ -197,32 +211,29 @@ class Umbral(pygame.sprite.Sprite):
 
     def wander(self, delta_time):
         """Wandering movement logic for Umbral."""
-        # Update the wander timer
         self.wander_timer += delta_time
 
-        # Change direction every interval
+        # Change direction periodically based on the wander interval
         if self.wander_timer >= self.wander_interval:
             self.wander_timer = 0
-            self.change_direction()
 
-        # Move in the current direction
-        self.rect.x += self.direction.x * self.speed
-        self.rect.y += self.direction.y * self.speed
+            distance_from_spawn = Vector2(self.rect.center).distance_to(self.spawn_position)
 
-        # Prevent the Umbral from wandering off the screen by reversing direction at boundaries
-        if self.rect.x <= 0:
-            self.rect.x = 0
-            self.direction.x = abs(self.direction.x)  # Move right
-        elif self.rect.x >= self.screen_width - self.rect.width:
-            self.rect.x = self.screen_width - self.rect.width
-            self.direction.x = -abs(self.direction.x)  # Move left
+            if distance_from_spawn > self.max_wander_distance:
+                # Return to spawn if wandering too far
+                direction = (self.spawn_position - Vector2(self.rect.center)).normalize()
+                self.direction = direction  # Set direction to move toward spawn
+            else:
+                # Choose a new random direction within the allowed radius
+                dx = random.choice([-1, 1]) * random.uniform(0.5, 1.5)  # Random step size
+                dy = random.choice([-1, 1]) * random.uniform(0.5, 1.5)
+                self.direction = Vector2(dx, dy).normalize()
 
-        if self.rect.y <= 0:
-            self.rect.y = 0
-            self.direction.y = abs(self.direction.y)  # Move down
-        elif self.rect.y >= self.screen_height - self.rect.height:
-            self.rect.y = self.screen_height - self.rect.height
-            self.direction.y = -abs(self.direction.y)  # Move up
+        # Move continuously in the current direction
+        self.rect.x += self.direction.x * self.speed * 0.5  # Increased speed for visibility
+        self.rect.y += self.direction.y * self.speed * 0.5
+
+        self.update_direction(self.direction)  # Update animation direction
 
     def chase_player(self, player):
         """Chase the player if they are nearby."""
@@ -247,16 +258,37 @@ class Umbral(pygame.sprite.Sprite):
         else:
             self.direction = pygame.Vector2(0, 1 if direction.y > 0 else -1)  # Vertical movement
 
-    def change_direction(self):
-        """Change direction randomly for wandering behavior."""
-        directions = [
-            pygame.Vector2(1, 0),   # Right
-            pygame.Vector2(-1, 0),  # Left
-            pygame.Vector2(0, 1),   # Down
-            pygame.Vector2(0, -1)   # Up
-        ]
-        self.direction = directions[random.randint(0, len(directions) - 1)]
+    def check_line_of_sight(self, player):
+        """Check if there are obstacles between Umbral and player."""
+        player_pos = Vector2(player.rect.center)
+        umbral_pos = Vector2(self.rect.center)
+        
+        # Simple distance check for line of sight (you can add raycasting if needed)
+        return player_pos.distance_to(umbral_pos) > self.chase_threshold
 
+    # def change_direction(self):
+    #     """Change direction randomly for wandering behavior."""
+    #     directions = [
+    #         pygame.Vector2(1, 0),   # Right
+    #         pygame.Vector2(-1, 0),  # Left
+    #         pygame.Vector2(0, 1),   # Down
+    #         pygame.Vector2(0, -1)   # Up
+    #     ]
+    #     self.direction = directions[random.randint(0, len(directions) - 1)]
+    
+    def update_direction(self, direction):
+        """Update the direction for animations."""
+        if abs(direction.x) > abs(direction.y):
+            if direction.x > 0:
+                self.direction = Vector2(1, 0)  # Right
+            else:
+                self.direction = Vector2(-1, 0)  # Left
+        else:
+            if direction.y > 0:
+                self.direction = Vector2(0, 1)  # Down
+            else:
+                self.direction = Vector2(0, -1)  # U
+                
     def animate(self, delta_time, player):
         """Handles sprite animation."""
         self.animation_timer += delta_time
